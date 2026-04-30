@@ -1,0 +1,521 @@
+<!doctype html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TransportHub - Gerenciador de Transportadoras</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;700;800&display=swap" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous" />
+
+  <style>
+    :root {
+      --bg-start: #f6f4ef;
+      --bg-end: #ece8de;
+      --card: rgba(255, 255, 255, 0.85);
+      --text-main: #1f2a2b;
+      --text-soft: #66717a;
+      --accent: #1f7a62;
+      --accent-soft: #dff2eb;
+      --danger-soft: #ffe7e7;
+      --shadow: 0 16px 40px rgba(36, 49, 48, 0.14);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: "Nunito", sans-serif;
+      color: var(--text-main);
+      background: radial-gradient(circle at 15% 20%, #ffffff99 0%, transparent 35%),
+        linear-gradient(130deg, var(--bg-start), var(--bg-end));
+    }
+
+    .shell {
+      max-width: 720px;
+      margin: clamp(1.25rem, 3vw, 3rem) auto;
+      padding: clamp(1rem, 3vw, 2rem);
+    }
+
+    .task-card {
+      border: 1px solid #ffffff;
+      border-radius: 1.25rem;
+      background: var(--card);
+      backdrop-filter: blur(4px);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      animation: rise 0.55s ease;
+    }
+
+    .task-card-header {
+      padding: 1.5rem 1.5rem 1rem;
+    }
+
+    .badge-soft {
+      color: var(--accent);
+      background-color: var(--accent-soft);
+      border: 1px solid #c6e8dc;
+      font-weight: 700;
+    }
+
+    .heading {
+      font-size: clamp(1.6rem, 4vw, 2.25rem);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.2rem;
+    }
+
+    .sub {
+      color: var(--text-soft);
+    }
+
+    .task-form {
+      padding: 0.5rem 1.5rem 0;
+    }
+
+    .task-input {
+      border-radius: 0.95rem;
+      border: 1px solid #d6d8dc;
+      padding: 0.78rem 0.95rem;
+    }
+
+    .task-input:focus {
+      border-color: #92ccb9;
+      box-shadow: 0 0 0 0.25rem #1f7a621f;
+    }
+
+    .btn-add {
+      border-radius: 0.95rem;
+      font-weight: 700;
+      background-color: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .btn-add:hover,
+    .btn-add:focus {
+      background-color: #18624f;
+      border-color: #18624f;
+    }
+
+    .toolbar {
+      padding: 1rem 1.5rem 0.4rem;
+    }
+
+    .filter-btn {
+      border-radius: 999px;
+      font-weight: 700;
+    }
+
+    .tasks-wrap {
+      padding: 0.3rem 1.5rem 1.2rem;
+    }
+
+    .task-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1rem;
+    }
+
+    .task-item {
+      display: flex;
+      flex-direction: column;
+      border: 1px solid #e8ecec;
+      border-radius: 0.95rem;
+      padding: 1.2rem;
+      background: #fff;
+      animation: fadeUp 0.28s ease both;
+    }
+
+    .task-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .carrier-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 0.75rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .carrier-name {
+      margin: 0;
+      font-weight: 800;
+      font-size: 1.1rem;
+      color: var(--text-main);
+      flex: 1;
+    }
+
+    .carrier-description {
+      margin: 0 0 0.75rem 0;
+      color: var(--text-soft);
+      font-weight: 500;
+      font-size: 0.95rem;
+      line-height: 1.4;
+    }
+
+    .carrier-status-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 0.75rem;
+      border-top: 1px solid #e8ecec;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.35rem 0.75rem;
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: 0.85rem;
+    }
+
+    .status-active {
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+
+    .status-inactive {
+      background: #f0f0f0;
+      color: #666;
+    }
+
+    .status-dot {
+      width: 0.5rem;
+      height: 0.5rem;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .status-dot.active {
+      background: var(--accent);
+    }
+
+    .status-dot.inactive {
+      background: #999;
+    }
+
+    .toggle-status {
+      position: relative;
+      display: inline-flex;
+      width: 2.8rem;
+      height: 1.5rem;
+      background: #d8d8d8;
+      border-radius: 999px;
+      cursor: pointer;
+      border: none;
+      padding: 0;
+      margin: 0;
+      transition: background 0.2s ease;
+    }
+
+    .toggle-status.active {
+      background: var(--accent);
+    }
+
+    .toggle-status::after {
+      content: "";
+      position: absolute;
+      width: 1.2rem;
+      height: 1.2rem;
+      background: white;
+      border-radius: 50%;
+      top: 0.15rem;
+      left: 0.15rem;
+      transition: left 0.2s ease;
+    }
+
+    .toggle-status.active::after {
+      left: 1.45rem;
+    }
+
+    .btn-trash {
+      border: 1px solid #f0c8c8;
+      color: #b24f4f;
+      background: var(--danger-soft);
+      border-radius: 0.65rem;
+      padding: 0.35rem 0.75rem;
+      font-size: 0.85rem;
+      font-weight: 700;
+    }
+
+    .btn-trash:hover {
+      background: #ffdcdc;
+    }
+
+    .empty-state {
+      border: 1px dashed #d8dddd;
+      border-radius: 0.95rem;
+      color: var(--text-soft);
+      padding: 1rem;
+      text-align: center;
+      font-weight: 700;
+    }
+
+    .footer-row {
+      border-top: 1px solid #edf0f0;
+      padding: 0.9rem 1.5rem 1.25rem;
+    }
+
+    @keyframes rise {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(5px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="shell">
+    <section class="task-card">
+      <header class="task-card-header">
+        <span class="badge badge-soft rounded-pill">Controle operacional</span>
+        <h1 class="heading mt-2">TransportHub</h1>
+        <p class="sub mb-0">Gerencie suas transportadoras de forma simples e intuitiva.</p>
+      </header>
+
+      <form id="taskForm" class="task-form" autocomplete="off">
+        <div class="row g-2">
+          <div class="col-8">
+            <input id="taskInput" class="form-control task-input" type="text" placeholder="Nome da transportadora"
+              aria-label="Nome da transportadora" maxlength="80" required />
+          </div>
+          <div class="col-4">
+            <input id="taskDesc" class="form-control task-input" type="text" placeholder="Descrição breve"
+              aria-label="Descrição da transportadora" maxlength="60" />
+          </div>
+        </div>
+        <div class="mt-2">
+          <button class="btn btn-primary btn-add" type="submit" style="width: 100%;">Adicionar Transportadora</button>
+        </div>
+      </form>
+
+      <div class="toolbar d-flex align-items-center justify-content-between gap-2 flex-wrap">
+        <div class="btn-group btn-group-sm" role="group" aria-label="Filtros">
+          <button type="button" class="btn btn-outline-secondary filter-btn active" data-filter="all">
+            Todas
+          </button>
+          <button type="button" class="btn btn-outline-secondary filter-btn" data-filter="active">
+            Ativas
+          </button>
+          <button type="button" class="btn btn-outline-secondary filter-btn" data-filter="done">
+            Inativas
+          </button>
+        </div>
+        <button id="clearDone" type="button" class="btn btn-sm btn-outline-danger rounded-pill">
+          Excluir inativas
+        </button>
+      </div>
+
+      <div class="tasks-wrap">
+        <ul id="taskList" class="task-list"></ul>
+      </div>
+
+      <footer class="footer-row d-flex align-items-center justify-content-between flex-wrap gap-2">
+        <small id="taskCounter" class="text-muted">0 transportadoras</small>
+        <small class="text-muted">Bootstrap 5.2 + HTML/CSS/JS</small>
+      </footer>
+    </section>
+  </main>
+
+  <script>
+    const STORAGE_KEY = "transporthub.carriers.v1";
+    const form = document.getElementById("taskForm");
+    const input = document.getElementById("taskInput");
+    const descInput = document.getElementById("taskDesc");
+    const taskList = document.getElementById("taskList");
+    const taskCounter = document.getElementById("taskCounter");
+    const clearDoneButton = document.getElementById("clearDone");
+    const filterButtons = [...document.querySelectorAll(".filter-btn")];
+
+    let carriers = [];
+    let activeFilter = "all";
+
+    const normalize = (value) => value.trim().replace(/\s+/g, " ");
+
+    const saveCarriers = () => {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(carriers));
+    };
+
+    const loadCarriers = () => {
+      try {
+        const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+        if (Array.isArray(data)) {
+          carriers = data.filter(
+            (item) =>
+              typeof item.name === "string" &&
+              typeof item.description === "string" &&
+              typeof item.active === "boolean"
+          );
+        }
+      } catch {
+        carriers = [];
+      }
+    };
+
+    const getVisibleCarriers = () => {
+      if (activeFilter === "active") {
+        return carriers.filter((carrier) => carrier.active);
+      }
+      if (activeFilter === "done") {
+        return carriers.filter((carrier) => !carrier.active);
+      }
+      return carriers;
+    };
+
+    const renderCounter = () => {
+      const active = carriers.filter((carrier) => carrier.active).length;
+      const total = carriers.length;
+      const label = total === 1 ? "transportadora" : "transportadoras";
+      taskCounter.textContent = `${active} ativa(s) de ${total} ${label}`;
+    };
+
+    const renderCarriers = () => {
+      const visibleCarriers = getVisibleCarriers();
+      taskList.innerHTML = "";
+
+      if (!visibleCarriers.length) {
+        taskList.innerHTML = '<li class="empty-state" style="grid-column: 1/-1;">Nenhuma transportadora neste filtro.</li>';
+        renderCounter();
+        return;
+      }
+
+      visibleCarriers.forEach((carrier) => {
+        const item = document.createElement("li");
+        item.className = "task-item";
+
+        const header = document.createElement("div");
+        header.className = "carrier-header";
+
+        const name = document.createElement("p");
+        name.className = "carrier-name";
+        name.textContent = carrier.name;
+
+        const deleteBtn = document.createElement("button");
+        deleteBtn.className = "btn-trash";
+        deleteBtn.type = "button";
+        deleteBtn.textContent = "Excluir";
+        deleteBtn.ariaLabel = `Excluir transportadora: ${carrier.name}`;
+        deleteBtn.addEventListener("click", () => removeCarrier(carrier.id));
+
+        header.append(name, deleteBtn);
+
+        const description = document.createElement("p");
+        description.className = "carrier-description";
+        description.textContent = carrier.description || "Sem descrição";
+
+        const statusRow = document.createElement("div");
+        statusRow.className = "carrier-status-row";
+
+        const statusBadge = document.createElement("span");
+        statusBadge.className = `status-badge ${carrier.active ? "status-active" : "status-inactive"}`;
+        const dot = document.createElement("span");
+        dot.className = `status-dot ${carrier.active ? "active" : "inactive"}`;
+        const statusText = document.createElement("span");
+        statusText.textContent = carrier.active ? "Ativa" : "Inativa";
+        statusBadge.append(dot, statusText);
+
+        const toggle = document.createElement("button");
+        toggle.className = `toggle-status ${carrier.active ? "active" : ""}`;
+        toggle.type = "button";
+        toggle.ariaLabel = `Alternar status da transportadora: ${carrier.name}`;
+        toggle.addEventListener("click", () => toggleCarrier(carrier.id));
+
+        statusRow.append(statusBadge, toggle);
+
+        item.append(header, description, statusRow);
+        taskList.appendChild(item);
+      });
+
+      renderCounter();
+    };
+
+    const addCarrier = (rawName, rawDesc) => {
+      const name = normalize(rawName);
+      if (!name) return;
+      const description = normalize(rawDesc);
+
+      carriers.unshift({
+        id: crypto.randomUUID(),
+        name,
+        description,
+        active: true,
+      });
+
+      saveCarriers();
+      renderCarriers();
+    };
+
+    const toggleCarrier = (id) => {
+      carriers = carriers.map((carrier) =>
+        carrier.id === id ? { ...carrier, active: !carrier.active } : carrier
+      );
+      saveCarriers();
+      renderCarriers();
+    };
+
+    const removeCarrier = (id) => {
+      carriers = carriers.filter((carrier) => carrier.id !== id);
+      saveCarriers();
+      renderCarriers();
+    };
+
+    const clearInactive = () => {
+      carriers = carriers.filter((carrier) => carrier.active);
+      saveCarriers();
+      renderCarriers();
+    };
+
+    filterButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        activeFilter = button.dataset.filter;
+        filterButtons.forEach((btn) => btn.classList.toggle("active", btn === button));
+        renderCarriers();
+      });
+    });
+
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      addCarrier(input.value, descInput.value);
+      input.value = "";
+      descInput.value = "";
+      input.focus();
+    });
+
+    clearDoneButton.addEventListener("click", clearInactive);
+
+    loadCarriers();
+    renderCarriers();
+  </script>
+</body>
+
+</html>

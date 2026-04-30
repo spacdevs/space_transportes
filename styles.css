@@ -22,11 +22,11 @@
         linear-gradient(130deg, var(--bg-start), var(--bg-end));
     }
 
-    .shell {
+    /* .shell {
       max-width: 720px;
       margin: clamp(1.25rem, 3vw, 3rem) auto;
       padding: clamp(1rem, 3vw, 2rem);
-    }
+    } */
 
     .task-card {
       border: 1px solid #ffffff;

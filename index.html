@@ -95,6 +95,7 @@
             (item) =>
               typeof item.name === "string" &&
               typeof item.description === "string" &&
+              typeof item.status === "string" &&
               typeof item.active === "boolean"
           );
         }
@@ -156,6 +157,10 @@
 
         const statusRow = document.createElement("div");
         statusRow.className = "carrier-status-row";
+        const status = document.createElement("p");
+        status.className = "carrier-status";
+        status.textContent = carrier.status || "Sem status";
+        statusRow.append(status);
 
         const statusBadge = document.createElement("span");
         statusBadge.className = `status-badge ${carrier.active ? "status-active" : "status-inactive"}`;
@@ -243,24 +248,28 @@
           id: crypto.randomUUID(),
           name: "JadLog",
           description: "Logística e distribuição nacional",
+          status: 'Entregue',
           active: true,
         },
         {
           id: crypto.randomUUID(),
           name: "Sedex (Correios)",
           description: "Serviço de envio expresso",
+          status: 'Entregue',
           active: true,
         },
         {
           id: crypto.randomUUID(),
           name: "Loggi",
           description: "Entregas rápidas em zona urbana",
+          status: 'Enviado',
           active: true,
         },
         {
           id: crypto.randomUUID(),
           name: "TransBrasil",
           description: "Transportadora de carga pesada",
+          status: 'Em Rota',
           active: false,
         },
         {

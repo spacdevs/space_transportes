@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>TransportHub - Gerenciador de Transportadoras</title>
+  <title>Space Transportes - Gerenciador de Transportadoras</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -19,7 +19,7 @@
     <section class="task-card">
       <header class="task-card-header">
         <span class="badge badge-soft rounded-pill">Controle operacional</span>
-        <h1 class="heading mt-2">TransportHub</h1>
+        <h1 class="heading mt-2">Space Transportes</h1>
         <p class="sub mb-0">Gerencie suas transportadoras de forma simples e intuitiva.</p>
       </header>
 
@@ -40,7 +40,7 @@
         </div>
       </form>
 
-      <div class="toolbar d-flex align-items-center justify-content-between gap-2 flex-wrap">
+      <div class="toolbar d-flex align-items-center justify-content-between gap-2 flex-wrap my-5">
         <div class="btn-group btn-group-sm" role="group" aria-label="Filtros">
           <button type="button" class="btn btn-outline-secondary filter-btn active" data-filter="all">
             Todas
@@ -52,9 +52,6 @@
             Inativas
           </button>
         </div>
-        <button id="clearDone" type="button" class="btn btn-sm btn-outline-danger rounded-pill">
-          Excluir inativas
-        </button>
       </div>
 
       <div class="tasks-wrap">
@@ -63,7 +60,9 @@
 
       <footer class="footer-row d-flex align-items-center justify-content-between flex-wrap gap-2">
         <small id="taskCounter" class="text-muted">0 transportadoras</small>
-        <small class="text-muted">Bootstrap 5.2 + HTML/CSS/JS</small>
+        <small class="text-muted">Incrivelmente criado com <a
+            href="https://getbootstrap.com/docs/5.0/components/buttons/" target="_blank"
+            rel="noopener noreferrer">Bootstrap 5.2</a></small>
       </footer>
     </section>
   </main>
@@ -75,7 +74,6 @@
     const descInput = document.getElementById("taskDesc");
     const taskList = document.getElementById("taskList");
     const taskCounter = document.getElementById("taskCounter");
-    const clearDoneButton = document.getElementById("clearDone");
     const filterButtons = [...document.querySelectorAll(".filter-btn")];
 
     let carriers = [];
@@ -142,15 +140,6 @@
         name.className = "carrier-name";
         name.textContent = carrier.name;
 
-        const deleteBtn = document.createElement("button");
-        deleteBtn.className = "btn-trash";
-        deleteBtn.type = "button";
-        deleteBtn.textContent = "Excluir";
-        deleteBtn.ariaLabel = `Excluir transportadora: ${carrier.name}`;
-        deleteBtn.addEventListener("click", () => removeCarrier(carrier.id));
-
-        header.append(name, deleteBtn);
-
         const description = document.createElement("p");
         description.className = "carrier-description";
         description.textContent = carrier.description || "Sem descrição";
@@ -209,18 +198,6 @@
       renderCarriers();
     };
 
-    const removeCarrier = (id) => {
-      carriers = carriers.filter((carrier) => carrier.id !== id);
-      saveCarriers();
-      renderCarriers();
-    };
-
-    const clearInactive = () => {
-      carriers = carriers.filter((carrier) => carrier.active);
-      saveCarriers();
-      renderCarriers();
-    };
-
     filterButtons.forEach((button) => {
       button.addEventListener("click", () => {
         activeFilter = button.dataset.filter;
@@ -236,8 +213,6 @@
       descInput.value = "";
       input.focus();
     });
-
-    clearDoneButton.addEventListener("click", clearInactive);
 
     loadCarriers();
 

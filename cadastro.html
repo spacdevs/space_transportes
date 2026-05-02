@@ -381,12 +381,17 @@
       try {
         const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
         if (Array.isArray(data)) {
-          carriers = data.filter(
-            (item) =>
-              typeof item.name === "string" &&
-              typeof item.description === "string" &&
-              typeof item.active === "boolean"
-          );
+          carriers = data
+            .filter(
+              (item) =>
+                typeof item.name === "string" &&
+                typeof item.description === "string" &&
+                typeof item.active === "boolean"
+            )
+            .map((item) => ({
+              ...item,
+              status: typeof item.status === "string" ? item.status : "Sem status",
+            }));
         }
       } catch {
         carriers = [];
@@ -479,6 +484,7 @@
         id: crypto.randomUUID(),
         name,
         description,
+        status: "Em Rota de Entrega",
         active: true,
       });
 

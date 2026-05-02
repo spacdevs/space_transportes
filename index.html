@@ -89,13 +89,17 @@
       try {
         const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
         if (Array.isArray(data)) {
-          carriers = data.filter(
-            (item) =>
-              typeof item.name === "string" &&
-              typeof item.description === "string" &&
-              typeof item.status === "string" &&
-              typeof item.active === "boolean"
-          );
+          carriers = data
+            .filter(
+              (item) =>
+                typeof item.name === "string" &&
+                typeof item.description === "string" &&
+                typeof item.active === "boolean"
+            )
+            .map((item) => ({
+              ...item,
+              status: typeof item.status === "string" ? item.status : "Sem status",
+            }));
         }
       } catch {
         carriers = [];
@@ -133,12 +137,14 @@
         const item = document.createElement("li");
         item.className = "task-item";
 
+
         const header = document.createElement("div");
         header.className = "carrier-header";
 
         const name = document.createElement("p");
         name.className = "carrier-name";
         name.textContent = carrier.name;
+        header.appendChild(name);
 
         const description = document.createElement("p");
         description.className = "carrier-description";
@@ -183,6 +189,7 @@
         id: crypto.randomUUID(),
         name,
         description,
+        status: "Em Rota de Entrega",
         active: true,
       });
 
@@ -223,34 +230,35 @@
           id: crypto.randomUUID(),
           name: "JadLog",
           description: "Logística e distribuição nacional",
-          status: 'Entregue',
+          status: "Entregue",
           active: true,
         },
         {
           id: crypto.randomUUID(),
           name: "Sedex (Correios)",
           description: "Serviço de envio expresso",
-          status: 'Entregue',
+          status: "Entregue",
           active: true,
         },
         {
           id: crypto.randomUUID(),
           name: "Loggi",
           description: "Entregas rápidas em zona urbana",
-          status: 'Enviado',
+          status: "Enviado",
           active: true,
         },
         {
           id: crypto.randomUUID(),
           name: "TransBrasil",
           description: "Transportadora de carga pesada",
-          status: 'Em Rota',
+          status: "Em Rota",
           active: false,
         },
         {
           id: crypto.randomUUID(),
           name: "Azul Logística",
           description: "Soluções para e-commerce",
+          status: "Sem status",
           active: true,
         },
       ];
